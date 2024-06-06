@@ -28,6 +28,7 @@ if [[ "$confirmation" == "yes" ]]; then
     echo "//$SAMBA_SERVER/$SAMBA_SHARE $MOUNT_POINT cifs username=$SAMBA_USER,password=$SAMBA_PASS,uid=$(id -u $HOSTNAME),gid=$(id -g $HOSTNAME) 0 0" >> /etc/fstab
     mount -a
 else
+    echo "Not mounting SMB share."
 fi
 # Get the hostname of the container
 HOSTNAME=$(hostname)
