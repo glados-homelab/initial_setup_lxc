@@ -8,25 +8,6 @@ apt update && apt upgrade -y
 echo "Installing necessary packages..."
 apt install vim cifs-utils -y
 
-# Get the hostname of the container
-HOSTNAME=$(hostname)
-
-# Create a user with the same name as the hostname
-echo "Creating user $HOSTNAME..."
-useradd -m -s /bin/bash -G sudo $HOSTNAME
-
-# Set the user's password to be the same as the hostname
-echo "$HOSTNAME:$HOSTNAME" | chpasswd
-
-# Grant sudo privileges to the new user
-echo "Granting sudo privileges to $HOSTNAME..."
-usermod -aG sudo $HOSTNAME
-
-# Configure SSH to disable root login and allow the new user to login
-echo "Configuring SSH to allow login with the new user..."
-sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
-systemctl restart sshd
-
 read -p "Do you want to mount a SMB share? (yes/no) " confirmation
 
 if [[ "$confirmation" == "yes" ]]; then
@@ -48,6 +29,24 @@ if [[ "$confirmation" == "yes" ]]; then
     mount -a
 else
 fi
+# Get the hostname of the container
+HOSTNAME=$(hostname)
+
+# Create a user with the same name as the hostname
+echo "Creating user $HOSTNAME..."
+useradd -m -s /bin/bash -G sudo $HOSTNAME
+
+# Set the user's password to be the same as the hostname
+echo "$HOSTNAME:$HOSTNAME" | chpasswd
+
+# Grant sudo privileges to the new user
+echo "Granting sudo privileges to $HOSTNAME..."
+usermod -aG sudo $HOSTNAME
+
+# Configure SSH to disable root login and allow the new user to login
+echo "Configuring SSH to allow login with the new user..."
+sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+systemctl restart sshd
 
 # Instruction for the user to verify SSH access
 echo "Please verify SSH access to the server using the new user $HOSTNAME."
